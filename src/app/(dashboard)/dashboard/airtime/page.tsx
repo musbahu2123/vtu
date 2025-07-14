@@ -48,6 +48,7 @@ export default function AirtimePage() {
     phoneNumber: phoneNumber || "N/A",
     amount: selectedAmount || (customAmount ? parseFloat(customAmount) : 0),
     fee: 0, // Assuming no fee for now
+    total: 0,
   };
   purchaseSummary.total = purchaseSummary.amount + purchaseSummary.fee;
 
