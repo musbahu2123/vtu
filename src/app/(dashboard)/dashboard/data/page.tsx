@@ -60,6 +60,7 @@ export default function DataPage() {
     duration: selectedDataPlan ? selectedDataPlan.duration : "N/A",
     amount: selectedDataPlan ? selectedDataPlan.price : 0,
     fee: 0, // Assuming no fee for now
+    total: 0,
   };
   purchaseSummary.total = purchaseSummary.amount + purchaseSummary.fee;
 
