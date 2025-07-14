@@ -90,46 +90,52 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      // In a real application, you'd send formData.email and formData.password to your backend
+      // For this simulated environment, we'll directly call authLogin with these credentials.
+      // The fetch call to /api/auth/login is commented out as it's not implemented.
 
-      const data = await response.json();
+      // const response = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     email: formData.email,
+      //     password: formData.password,
+      //   }),
+      // });
 
-      if (response.ok) {
-        console.log("Login Success:", data);
-        // Call the login function from AuthContext to store user data
-        authLogin({
-          id: data.user.id, // Assuming your API returns user.id
-          email: data.user.email,
-          fullName: data.user.fullName,
-          // Include any other user data returned by your API
-        });
-        router.push("/dashboard"); // Redirect to dashboard
-      } else {
-        setGeneralError(
-          data.message || "Invalid email or password. Please try again."
-        );
-        console.error("Login Error:", data);
-      }
-    } catch (error) {
-      console.error("Network or unexpected error during login:", error);
+      // const data = await response.json();
+
+      // if (response.ok) {
+      //   console.log("Login Success:", data);
+      //   // Call the login function from AuthContext to store user data
+      //   // Note: authLogin now expects email and password directly
+      //   authLogin(formData.email, formData.password);
+      //   router.push("/dashboard"); // Redirect to dashboard
+      // } else {
+      //   setGeneralError(
+      //     data.message || "Invalid email or password. Please try again."
+      //   );
+      //   console.error("Login Error:", data);
+      // }
+
+      // --- Simulated login for local testing ---
+      await authLogin(formData.email, formData.password); // Call authLogin with email and password
+      router.push("/dashboard"); // Redirect on success handled by authLogin internally
+      // --- End simulated login ---
+    } catch (error: any) {
+      // Catch error as 'any' to access 'message'
+      console.error("Login Error:", error);
       setGeneralError(
-        "Could not connect to the server. Please try again later."
+        error.message ||
+          "Could not connect to the server. Please try again later."
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-  // If the auth context is still loading, you might want to show a spinner
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--color-light-bg)]">

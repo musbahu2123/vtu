@@ -1,91 +1,105 @@
-"use client"; // This context will be used by client components
+"use client";
 
 import React, {
   createContext,
-  useState,
   useContext,
+  useState,
   useEffect,
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
 
-// Define the shape of our user data
+// Define the User interface
 interface User {
-  id: string;
-  email: string;
-  fullName: string;
-  // Add other user properties as needed (e.g., balance, roles)
+  uid: string;
+  email: string | null;
+  fullName: string | null;
+  balance: string; // Assuming balance is stored as a string like "₦25,000"
+  phoneNumber: string | null; // Added phoneNumber here
+  // Add other user properties as needed
 }
 
-// Define the shape of the AuthContext
+// Define the AuthContextType
 interface AuthContextType {
   user: User | null;
-  login: (userData: User) => void;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  isLoading: boolean; // To indicate if auth state is being loaded
 }
 
-// Create the context with a default null value
+// Create the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Auth Provider Component
-export function AuthProvider({ children }: { children: ReactNode }) {
+// Create the AuthProvider component
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Start as loading
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // On component mount, try to load user from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("MUSBAHDEV_user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error("Failed to parse user from localStorage", e);
-        localStorage.removeItem("MUSBAHDEV_user"); // Clear corrupted data
+    const loadUser = async () => {
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const storedUser = localStorage.getItem("currentUser");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser({
+          uid: parsedUser.uid,
+          email: parsedUser.email,
+          fullName: parsedUser.fullName,
+          balance: parsedUser.balance || "₦0.00",
+          phoneNumber: parsedUser.phoneNumber || null, // Ensure phoneNumber is set
+        });
       }
-    }
-    setIsLoading(false); // Finished loading auth state
+      setIsLoading(false);
+    };
+
+    loadUser();
   }, []);
 
-  // Function to handle user login
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("MUSBAHDEV_user", JSON.stringify(userData));
-    // Optionally, navigate to dashboard here if not already handled by login form
-    // router.push('/dashboard');
+  const login = async (email: string, password: string) => {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    if (email === "test@example.com" && password === "password123") {
+      const dummyUser: User = {
+        uid: "user123",
+        email: "test@example.com",
+        fullName: "Musbahu Aminu Bala",
+        balance: "₦25,000",
+        phoneNumber: "09064973974", // Set a dummy phone number here
+      };
+      setUser(dummyUser);
+      localStorage.setItem("currentUser", JSON.stringify(dummyUser));
+      router.push("/dashboard");
+    } else {
+      throw new Error(
+        "Invalid email or password. API NOT FOUND: Actual login failed."
+      );
+    }
+    setIsLoading(false);
   };
 
-  // Function to handle user logout
-  const logout = async () => {
-    setIsLoading(true); // Indicate loading during logout process
-    try {
-      // Call your backend logout API (if you have one to invalidate tokens)
-      await fetch("/api/auth/logout", { method: "POST" });
-      console.log("Logged out successfully from backend.");
-    } catch (error) {
-      console.error("Error during backend logout:", error);
-      // Continue with frontend logout even if backend fails
-    } finally {
-      setUser(null);
-      localStorage.removeItem("MUSBAHDEV_user");
-      setIsLoading(false);
-      router.push("/login"); // Redirect to login page after logout
-    }
+  const logout = () => {
+    setIsLoading(true);
+    setUser(null);
+    localStorage.removeItem("currentUser");
+    router.push("/login");
+    setIsLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-// Custom hook to use the AuthContext
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
+};

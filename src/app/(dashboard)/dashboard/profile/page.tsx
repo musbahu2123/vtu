@@ -24,59 +24,58 @@ import {
   Clock,
   XCircle,
   Loader2,
-  CreditCard, // Added CreditCard here
+  CreditCard,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext"; // To fetch user data
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProfilePage() {
   const { user, isLoading: authLoading } = useAuth(); // Get user data from AuthContext
 
-  // State for user profile data (initially from AuthContext or dummy)
+  // State for user profile data, initialized directly from `user` object
+  // Provide sensible defaults for display until `user` is fully loaded/available
   const [profileData, setProfileData] = useState({
     fullName: user?.fullName || "Loading...",
     phoneNumber: user?.phoneNumber || "Loading...",
     email: user?.email || "Loading...",
     walletBalance: user?.balance || "₦0.00",
-    rewardTokens: "0", // Dummy
-    accountStatus: "Inactive", // Dummy
-    memberSince: "N/A", // Dummy
+    rewardTokens: "0", // This will remain dummy for now
+    accountStatus: "Inactive", // This will remain dummy for now
+    memberSince: "N/A", // This will remain dummy for now
   });
+
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // Simulate fetching user profile data on component mount
+  // Effect to update profileData when `user` changes or is initially loaded
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (authLoading) return; // Wait for auth to load
-
-      setIsLoadingProfile(true);
-      setProfileError(null);
-      try {
-        // API NOT FOUND: This would be a fetch call to your backend API to get detailed user profile
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network delay
-
-        // Use actual user data from AuthContext if available, otherwise dummy
-        setProfileData({
-          fullName: user?.fullName || "Musbahu Aminu Bala",
-          phoneNumber: user?.phoneNumber || "09064973974",
-          email: user?.email || "gamroff9@gmail.com",
-          walletBalance: user?.balance || "₦25,000",
-          rewardTokens: "500", // Dummy value
-          accountStatus: "Active", // Dummy value
-          memberSince: "Jan 2024", // Dummy value
-        });
-      } catch (err: any) {
-        setProfileError(
-          "API NOT FOUND: Failed to load profile data. " +
-            (err.message || "Please check backend connection.")
-        );
-      } finally {
-        setIsLoadingProfile(false);
-      }
-    };
-
-    fetchProfile();
-  }, [user, authLoading]); // Re-fetch if user or authLoading state changes
+    if (!authLoading && user) {
+      setProfileData({
+        fullName: user.fullName || "N/A",
+        phoneNumber: user.phoneNumber || "N/A",
+        email: user.email || "N/A",
+        walletBalance: user.balance || "₦0.00",
+        rewardTokens: "500", // Still dummy, would fetch from API
+        accountStatus: "Active", // Still dummy, would fetch from API
+        memberSince: "Jan 2024", // Still dummy, would fetch from API
+      });
+      setIsLoadingProfile(false);
+    } else if (!authLoading && !user) {
+      // If auth is done loading and no user is found, set a default/error state
+      setProfileData({
+        fullName: "Not Logged In",
+        phoneNumber: "N/A",
+        email: "N/A",
+        walletBalance: "₦0.00",
+        rewardTokens: "0",
+        accountStatus: "Inactive",
+        memberSince: "N/A",
+      });
+      setProfileError("User not logged in or profile data unavailable.");
+      setIsLoadingProfile(false);
+    }
+    // No simulated API call for profile data here, as we're using `user` directly.
+    // A real app might fetch *more* profile details here.
+  }, [user, authLoading]); // Depend on user and authLoading
 
   const handleEditProfile = () => {
     alert("API NOT FOUND: Edit Profile functionality coming soon!");
@@ -87,11 +86,9 @@ export default function ProfilePage() {
   };
 
   const handleChangeTransactionPIN = () => {
-    // This would ideally navigate to the /dashboard/create-pin page
     alert(
       "API NOT FOUND: Change Transaction PIN functionality coming soon! (Navigates to Create PIN)"
     );
-    // Example: router.push('/dashboard/create-pin');
   };
 
   const handleChangePassword = () => {
@@ -106,7 +103,6 @@ export default function ProfilePage() {
     alert(
       "API NOT FOUND: Transaction History functionality coming soon! (Navigates to Transactions page)"
     );
-    // Example: router.push('/dashboard/transactions');
   };
 
   const handleContactSupport = () => {
@@ -210,8 +206,6 @@ export default function ProfilePage() {
               </Button>
             </CardHeader>
             <CardContent className="p-0 text-gray-700">
-              {/* Conditional rendering for bank details */}
-              {/* API NOT FOUND: This would check if user has bank details */}
               <div className="flex flex-col items-center justify-center py-8 text-gray-500">
                 <CreditCard className="h-12 w-12 mb-4" />
                 <p className="mb-4">No bank details added yet</p>
@@ -222,13 +216,6 @@ export default function ProfilePage() {
                   Add Bank Details
                 </Button>
               </div>
-              {/* Example of how bank details would be displayed if available:
-              <div className="space-y-2">
-                <p><span className="font-semibold">Bank Name:</span> Access Bank</p>
-                <p><span className="font-semibold">Account Number:</span> 0123456789</p>
-                <p><span className="font-semibold">Account Name:</span> John Doe</p>
-              </div>
-              */}
             </CardContent>
           </Card>
 

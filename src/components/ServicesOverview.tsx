@@ -29,9 +29,11 @@ export default function ServicesOverview() {
               src="https://placehold.co/600x400/D4EDDA/00A86B?text=Digital+Services+Platform"
               alt="Digital Services Platform"
               className="rounded-xl shadow-xl w-full max-w-md md:max-w-lg lg:max-w-full h-auto object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src =
+              onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                // Explicitly type the event
+                const target = e.target as HTMLImageElement; // Cast e.target to HTMLImageElement
+                target.onerror = null; // Prevent infinite loop if fallback also fails
+                target.src =
                   "https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found";
               }}
             />

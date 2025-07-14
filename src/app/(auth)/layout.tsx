@@ -1,15 +1,24 @@
-// This layout applies to all routes within the (auth) group (e.g., /login, /signup)
+"use client"; // This layout must be a client component if it uses client hooks or renders client components.
+
+import { Suspense } from "react"; // Import Suspense
+
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    // You can add common layout elements for auth pages here,
-    // such as a specific background, a small logo, etc.
-    // For now, it's a simple wrapper.
-    <div className="min-h-screen flex items-center justify-center bg-[var(--color-light-bg)]">
+    // Wrap the children (which includes your LoginPage) with Suspense
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[var(--color-light-bg)]">
+          <p className="text-[var(--color-dark-text)]">
+            Loading authentication page...
+          </p>
+        </div>
+      }
+    >
       {children}
-    </div>
+    </Suspense>
   );
 }

@@ -31,7 +31,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// Import SheetHeader, SheetTitle, SheetDescription
 import {
   Sheet,
   SheetContent,
@@ -170,8 +169,9 @@ export default function DashboardLayout({
                     alt="User Avatar"
                   />
                   <AvatarFallback>
+                    {/* Safely access first character, providing a fallback if email is null */}
                     {displayUser.fullName?.charAt(0) ||
-                      displayUser.email.charAt(0)}
+                      (displayUser.email ? displayUser.email.charAt(0) : "U")}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -232,11 +232,13 @@ export default function DashboardLayout({
         <div className="flex items-center p-4 bg-gray-50 rounded-lg mb-6">
           <Avatar className="h-10 w-10 mr-3">
             <AvatarImage
-              src="https://placehold.co/40x40/00A86B/ffffff?text=EX"
+              src="https://placehold.co/40x40/00A86B/ffffff?text=U"
               alt="User Avatar"
             />
             <AvatarFallback>
-              {displayUser.fullName?.charAt(0) || displayUser.email.charAt(0)}
+              {/* Safely access first character, providing a fallback if email is null */}
+              {displayUser.fullName?.charAt(0) ||
+                (displayUser.email ? displayUser.email.charAt(0) : "U")}
             </AvatarFallback>
           </Avatar>
           <div>
@@ -309,7 +311,9 @@ export default function DashboardLayout({
                 alt="Profile"
               />
               <AvatarFallback>
-                {displayUser.fullName?.charAt(0) || displayUser.email.charAt(0)}
+                {/* Safely access first character, providing a fallback if email is null */}
+                {displayUser.fullName?.charAt(0) ||
+                  (displayUser.email ? displayUser.email.charAt(0) : "U")}
               </AvatarFallback>
             </Avatar>
           </div>

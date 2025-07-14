@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight, PlayCircle, Star } from "lucide-react"; // Ensure Star is imported
 
 export default function HeroSection() {
   return (
@@ -54,9 +54,10 @@ export default function HeroSection() {
             src="https://placehold.co/600x450/E0F2F7/00A86B?text=Digital+Services"
             alt="Person using phone for digital services"
             className="rounded-xl shadow-xl w-full max-w-md md:max-w-lg lg:max-w-full h-auto object-cover"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src =
+            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+              const target = e.target as HTMLImageElement; // Cast e.target to HTMLImageElement
+              target.onerror = null; // Prevent infinite loop if fallback also fails
+              target.src =
                 "https://placehold.co/600x450/cccccc/333333?text=Image+Not+Found";
             }}
           />
@@ -65,6 +66,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
-// Import Star icon for the "Trusted by" badge
-import { Star } from "lucide-react";

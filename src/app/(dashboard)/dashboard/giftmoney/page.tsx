@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea"; // For personal message
+import { Textarea } from "@/components/ui/textarea";
 import {
   Gift,
   DollarSign,
@@ -20,7 +20,7 @@ import {
   User,
   Phone,
   MessageSquare,
-} from "lucide-react"; // Icons
+} from "lucide-react";
 
 export default function GiftMoneyPage() {
   // State for selected gift type
@@ -44,7 +44,7 @@ export default function GiftMoneyPage() {
   // Dummy user wallet balance (will come from AuthContext or API)
   const userWalletBalance = 25000; // N25,000
 
-  // Gift type options
+  // Gift type options - Added 'as const' here
   const giftTypes = [
     {
       name: "Gift Money",
@@ -64,7 +64,7 @@ export default function GiftMoneyPage() {
       description: "Send data bundles",
       icon: Wifi,
     },
-  ];
+  ] as const; // <--- Added 'as const' here
 
   // Amount options
   const amountOptions = [500, 1000, 2000, 5000, 10000, 20000];
@@ -176,7 +176,7 @@ export default function GiftMoneyPage() {
                     }
                   `}
                   onClick={() => {
-                    setSelectedGiftType(type.type);
+                    setSelectedGiftType(type.type); // This is now correctly typed
                     // Reset subsequent fields when gift type changes
                     setRecipientPhoneNumber("");
                     setRecipientName("");
