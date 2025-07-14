@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle } from "lucide-react";
-import { useAuth } from "@/context/AuthContext"; // Import useAuth hook
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"; // Added Loader2 for loading state
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login: authLogin, isLoading: authLoading } = useAuth(); // Get login function from context
+  const { login: authLogin, isLoading: authLoading } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -90,46 +90,42 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // In a real application, you'd send formData.email and formData.password to your backend
-      // For this simulated environment, we'll directly call authLogin with these credentials.
-      // The fetch call to /api/auth/login is commented out as it's not implemented.
+      // This is the actual fetch call to your backend API
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-      // const response = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     email: formData.email,
-      //     password: formData.password,
-      //   }),
-      // });
+      const data = await response.json();
 
-      // const data = await response.json();
-
-      // if (response.ok) {
-      //   console.log("Login Success:", data);
-      //   // Call the login function from AuthContext to store user data
-      //   // Note: authLogin now expects email and password directly
-      //   authLogin(formData.email, formData.password);
-      //   router.push("/dashboard"); // Redirect to dashboard
-      // } else {
-      //   setGeneralError(
-      //     data.message || "Invalid email or password. Please try again."
-      //   );
-      //   console.error("Login Error:", data);
-      // }
-
-      // --- Simulated login for local testing ---
-      await authLogin(formData.email, formData.password); // Call authLogin with email and password
-      router.push("/dashboard"); // Redirect on success handled by authLogin internally
-      // --- End simulated login ---
+      if (response.ok) {
+        console.log("Login Success:", data);
+        // Assuming your API returns a 'user' object that matches the AuthContext's User interface
+        // e.g., data = { message: "Logged in", user: { uid: "...", email: "...", fullName: "...", balance: "..." } }
+        if (data.user) {
+          authLogin(data.user); // Pass the entire user object to authLogin
+        } else {
+          setGeneralError(
+            "Login successful, but user data missing from response."
+          );
+        }
+        // Redirection to /dashboard is now handled by authLogin internally
+      } else {
+        setGeneralError(
+          data.message || "Invalid email or password. Please try again."
+        );
+        console.error("Login Error:", data);
+      }
     } catch (error: any) {
-      // Catch error as 'any' to access 'message'
-      console.error("Login Error:", error);
+      console.error("Network or unexpected error during login:", error);
       setGeneralError(
-        error.message ||
-          "Could not connect to the server. Please try again later."
+        "Could not connect to the server. Please try again later."
       );
     } finally {
       setIsLoading(false);
@@ -139,7 +135,9 @@ export default function LoginPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--color-light-bg)]">
-        <p className="text-[var(--color-dark-text)]">
+        <Loader2 className="h-10 w-10 animate-spin text-[var(--color-primary)]" />{" "}
+        {/* Added Loader2 */}
+        <p className="ml-3 text-[var(--color-dark-text)]">
           Loading authentication...
         </p>
       </div>
@@ -262,7 +260,14 @@ export default function LoginPage() {
                 className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-2 px-4 rounded-md shadow-sm text-sm font-medium"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing In..." : "Sign in"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" /> Signing
+                    In...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </Button>
             </div>
           </form>

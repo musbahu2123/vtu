@@ -1,11 +1,12 @@
 // src/app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import clientPromise, { getDb } from '@/lib/mongodb'; // Correct path to mongodb.ts
+import clientPromise, { getDb } from '@/lib/mongodb';
 import bcrypt from 'bcryptjs';
 
 export async function POST(req: NextRequest) {
   try {
-    const { fullName, email, password } = await req.json();
+    // Assuming signup form sends fullName, email, password, and optionally phoneNumber
+    const { fullName, email, password, phoneNumber } = await req.json();
 
     // Basic server-side validation
     if (!fullName || !email || !password) {
@@ -16,8 +17,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Password must be at least 6 characters long.' }, { status: 400 });
     }
 
-    const db = await getDb(); // Get the database instance
-    const usersCollection = db.collection('users'); // Assuming your user collection is named 'users'
+    const db = await getDb();
+    const usersCollection = db.collection('users');
 
     // Check if user already exists
     const existingUser = await usersCollection.findOne({ email });
@@ -26,14 +27,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert new user into the database
+    // Insert new user into the database with initial balance and phone number
     const result = await usersCollection.insertOne({
       fullName,
       email,
       password: hashedPassword, // Store the hashed password
       createdAt: new Date(),
+      balance: '₦0.00', // Initialize balance for new users
+      phoneNumber: phoneNumber || null, // Initialize phone number, or null if not provided
     });
 
     // Respond with success
@@ -44,6 +47,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-// You can also define other HTTP methods if needed, e.g., GET, PUT, DELETE
-// export async function GET(req: NextRequest) { ... }
