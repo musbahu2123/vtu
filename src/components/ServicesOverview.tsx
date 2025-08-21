@@ -150,28 +150,6 @@ export default function ServicesOverview() {
               </Link>
             </CardContent>
           </Card>
-
-          {/* Service Card 6: Gift Cards */}
-          <Card className="rounded-xl shadow-lg p-8 text-center transform hover:scale-105 transition duration-300">
-            <CardContent className="p-0">
-              <div className="text-[var(--color-secondary)] text-5xl mb-6">
-                <Gift className="h-12 w-12 mx-auto" />
-              </div>
-              <h3 className="text-xl font-semibold text-[var(--color-dark-text)] mb-3">
-                Gift Cards
-              </h3>
-              <p className="text-gray-600">
-                Buy and sell gift cards easily. iTunes, Google Play, Amazon,
-                etc.
-              </p>
-              <Link
-                href="#"
-                className="mt-4 inline-block text-[var(--color-secondary)] hover:underline font-medium"
-              >
-                Learn More
-              </Link>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </section>
