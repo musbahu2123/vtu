@@ -47,12 +47,6 @@ export default function GiftMoneyPage() {
   // Gift type options - Added 'as const' here
   const giftTypes = [
     {
-      name: "Gift Money",
-      type: "money",
-      description: "Send money directly",
-      icon: DollarSign,
-    },
-    {
       name: "Gift Airtime",
       type: "airtime",
       description: "Send airtime credit",
@@ -89,12 +83,6 @@ export default function GiftMoneyPage() {
 
   // Recent gifts dummy data
   const recentGifts = [
-    {
-      type: "Money Gift",
-      recipient: "John Doe",
-      amount: 1000,
-      icon: DollarSign,
-    },
     {
       type: "Airtime Gift",
       recipient: "Jane Smith",

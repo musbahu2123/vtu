@@ -78,7 +78,7 @@ export default function DashboardLayout({
     { name: "Electricity", href: "/dashboard/electricity", icon: Lightbulb },
     { name: "Cable TV", href: "/dashboard/cabletv", icon: Tv },
     { name: "E-PINs", href: "/dashboard/epins", icon: QrCode },
-    { name: "Gift Money", href: "/dashboard/giftmoney", icon: Gift },
+    { name: "Gift", href: "/dashboard/giftmoney", icon: Gift },
     { name: "Fund Wallet", href: "/dashboard/fundwallet", icon: Wallet },
     { name: "Transactions", href: "/dashboard/transactions", icon: Repeat },
   ];
